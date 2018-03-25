@@ -41,7 +41,7 @@ func Login(c echo.Context) error {
 		token := jwt.New(jwt.SigningMethodHS256)
 
 		claims := token.Claims.(jwt.MapClaims)
-		claims["name"] = "Jon Snow"
+		claims["name"] = u.Name
 		claims["admin"] = true
 		claims["exp"] = time.Now().Add(time.Hour * 1).Unix()
 

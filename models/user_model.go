@@ -11,6 +11,7 @@ type User struct {
 	Password		string			`json:"password"`
 	Role 			string 			`json:"role"`
 	FranchiseId		int 			`json:"franchise_id"`
+	Name 			string			`json:"name"`
 }
 
 func GetUsers() ([]*User, error) {
