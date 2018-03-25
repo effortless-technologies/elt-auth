@@ -10,15 +10,34 @@ import (
 	"github.com/labstack/echo"
 )
 
-func Login(c echo.Context) error {
+func GetUsers(c echo.Context) error {
 
-	u := new(models.User)
-
-	if err := c.Bind(u); err != nil {
-		return err
+	u, err := models.GetUsers()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	if u.Username == "ef" && u.Password == "1234" {
+	return c.JSON(http.StatusOK, u)
+}
+
+func Login(c echo.Context) error {
+
+	type userPayload struct {
+		Username 		string 			`json:"username"`
+		Password 		string			`json:"password"`
+	}
+
+	up := new(userPayload)
+	if err := c.Bind(up); err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+
+	u, err := models.FindUser(up.Username)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	if up.Password == u.Password {
 		token := jwt.New(jwt.SigningMethodHS256)
 
 		claims := token.Claims.(jwt.MapClaims)
@@ -28,7 +47,7 @@ func Login(c echo.Context) error {
 
 		t, err := token.SignedString([]byte("secret"))
 		if err != nil {
-			return err
+			return c.JSON(http.StatusInternalServerError, err)
 		}
 		return c.JSON(http.StatusOK, map[string]string{
 			"token": t,

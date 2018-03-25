@@ -17,7 +17,7 @@ func accessible(c echo.Context) error {
 
 func restricted(c echo.Context) error {
 
-	user := c.Get("user.go").(*jwt.Token)
+	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
 	name := claims["name"].(string)
 	return c.String(http.StatusOK, "Welcome "+name+"!")
@@ -34,6 +34,7 @@ func main() {
 	e.POST("/login", server.Login)
 
 	e.GET("/", accessible)
+	e.GET("/users", server.GetUsers)
 
 	r := e.Group("/restricted")
 	r.Use(middleware.JWT([]byte("secret")))
