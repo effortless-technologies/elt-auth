@@ -34,7 +34,7 @@ func Login(c echo.Context) error {
 
 	u, err := models.FindUser(up.Username)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err)
+		return c.JSON(http.StatusNotFound, err)
 	}
 
 	if up.Password == u.Password {
@@ -42,6 +42,8 @@ func Login(c echo.Context) error {
 
 		claims := token.Claims.(jwt.MapClaims)
 		claims["name"] = u.Name
+		claims["franchise_id"] = u.FranchiseId
+		claims["role"] = u.Role
 		claims["admin"] = true
 		claims["exp"] = time.Now().Add(time.Hour * 1).Unix()
 

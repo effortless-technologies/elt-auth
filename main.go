@@ -20,7 +20,9 @@ func restricted(c echo.Context) error {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
 	name := claims["name"].(string)
-	return c.String(http.StatusOK, "Welcome "+name+"!")
+	//franchiseId := claims["franchise_id"].(float64)
+	role := claims["role"].(string)
+	return c.String(http.StatusOK, ""+name+" "+role)
 }
 
 func main() {
