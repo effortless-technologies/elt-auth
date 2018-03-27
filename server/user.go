@@ -45,7 +45,7 @@ func Login(c echo.Context) error {
 		claims["franchise_id"] = u.FranchiseId
 		claims["role"] = u.Role
 		claims["admin"] = true
-		claims["exp"] = time.Now().Add(time.Hour * 1).Unix()
+		claims["exp"] = time.Now().Add(time.Hour * 168).Unix()
 
 		t, err := token.SignedString([]byte("secret"))
 		if err != nil {
