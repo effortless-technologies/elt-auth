@@ -7,6 +7,7 @@ import (
 
 	"github.com/effortless-technologies/elt-auth/config"
 
+	"fmt"
 )
 
 var CONFIG = config.MakeConfig()
@@ -28,7 +29,6 @@ func GetUsers() ([]*User, error) {
 	}
 	defer session.Close()
 
-	// Optional. Switch the session to a monotonic behavior.
 	session.SetMode(mgo.Monotonic, true)
 
 	c := session.DB("elt").C("users")
@@ -37,6 +37,8 @@ func GetUsers() ([]*User, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Println(Users)
 
 	return Users, nil
 }
@@ -50,7 +52,6 @@ func FindUser(username string) (*User, error) {
 	}
 	defer session.Close()
 
-	// Optional. Switch the session to a monotonic behavior.
 	session.SetMode(mgo.Monotonic, true)
 
 	c := session.DB("elt").C("users")
