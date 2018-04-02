@@ -27,7 +27,7 @@ install:
   - sudo docker build -t test/build .
 
 script:
-  - echo "skip tests"
+  - go test ./... -tags prod -v 3
 
 before_deploy:
   - gcloud --quiet components update kubectl
