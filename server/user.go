@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/effortless-technologies/elt-auth/models"
@@ -31,6 +32,8 @@ func Login(c echo.Context) error {
 	if err := c.Bind(up); err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}
+
+	up.Username = strings.ToLower(up.Username)
 
 	u, err := models.FindUser(up.Username)
 	if err != nil {
