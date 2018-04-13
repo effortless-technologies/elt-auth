@@ -1,13 +1,21 @@
 package main
 
 import (
+	"flag"
 	"net/http"
 
 	"github.com/effortless-technologies/elt-auth/server"
+	"github.com/effortless-technologies/elt-auth/models"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
+)
+
+var mongoAddr = flag.String(
+	"mongoAddr",
+	"localhost:27017",
+	"database service address",
 )
 
 func accessible(c echo.Context) error {
@@ -26,6 +34,10 @@ func restricted(c echo.Context) error {
 }
 
 func main() {
+
+	flag.Parse()
+
+	models.MongoAddr = mongoAddr
 
 	e := echo.New()
 	e.Use(middleware.CORS())

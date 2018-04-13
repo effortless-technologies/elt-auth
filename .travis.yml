@@ -7,6 +7,8 @@ cache:
   directories:
     -s "$HOME/coding/google-cloud-sdk"
 
+services: mongodb
+
 env:
   global:
     - GOOGLE_APPLICATION_CREDENTIALS-~/.gcloud-service-key.json
@@ -27,7 +29,7 @@ install:
   - sudo docker build -t test/build .
 
 script:
-  - go test ./... -tags prod -v 3
+  - go test -test.v ./... -args -mongoAddr=0.0.0.0:27017
 
 before_deploy:
   - gcloud --quiet components update kubectl
