@@ -2,7 +2,7 @@ version: '2'
 services:
   mongodb:
     image: mongo:latest
-    container_name: "mongodb"
+    container_name: "mongodb-dev"
     environment:
       - MONGO_DATA_DIR=/data/db
       - MONGO_LOG_DIR=/dev/null
@@ -14,9 +14,7 @@ services:
 
   mongo-seed-users:
     image: mongo:latest
-    links:
-      - mongodb
     volumes:
       - ./seed-data:/seed-data
     command:
-      'bash -c "mongoimport --host mongodb --db elt --collection users --type json --file /seed-data/users.json --jsonArray"'
+      'bash -c "mongoimport --host mongodb-dev --db elt --collection users --type json --file /seed-data/users.json --jsonArray"'
