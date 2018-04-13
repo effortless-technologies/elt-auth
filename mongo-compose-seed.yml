@@ -12,7 +12,7 @@ services:
       - 27017:27017
     command: mongod --smallfiles --logpath=/dev/null # --quiet
 
-  mongo-seed-fly-rods:
+  mongo-seed-users:
     image: mongo:latest
     links:
       - mongodb

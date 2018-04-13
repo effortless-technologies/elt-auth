@@ -1,14 +1,13 @@
 package models
 
 import (
-	"fmt"
 	"log"
+
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-
 )
 
-var MongoAddr *string;
+var MongoAddr *string
 
 type User struct {
 	Username 		string 			`json:"username"`
@@ -35,8 +34,6 @@ func GetUsers() ([]*User, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println(Users)
 
 	return Users, nil
 }
