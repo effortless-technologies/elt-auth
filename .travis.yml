@@ -7,8 +7,6 @@ cache:
   directories:
     -s "$HOME/coding/google-cloud-sdk"
 
-services: mongodb
-
 env:
   global:
     - GOOGLE_APPLICATION_CREDENTIALS-~/.gcloud-service-key.json
@@ -27,6 +25,7 @@ before_install:
 
 install:
   - sudo docker build -t test/build .
+  - sudo docker-compose -f mongo-compose-seed.yml up --build -d
 
 script:
   - go test -test.v ./... -args -mongoAddr=0.0.0.0:27017
