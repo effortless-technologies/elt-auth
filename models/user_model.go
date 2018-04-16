@@ -2,15 +2,12 @@ package models
 
 import (
 	"log"
+
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-
-	"github.com/effortless-technologies/elt-auth/config"
-
-	"fmt"
 )
 
-var CONFIG = config.MakeConfig()
+var MongoAddr *string
 
 type User struct {
 	Username 		string 			`json:"username"`
@@ -22,7 +19,7 @@ type User struct {
 
 func GetUsers() ([]*User, error) {
 
-	session, err := mgo.Dial(CONFIG.Db)
+	session, err := mgo.Dial(*MongoAddr)
 	if err != nil {
 		log.Println("Could not connect to mongo: ", err.Error())
 		return nil, err
@@ -38,14 +35,12 @@ func GetUsers() ([]*User, error) {
 		return nil, err
 	}
 
-	fmt.Println(Users)
-
 	return Users, nil
 }
 
 func FindUser(username string) (*User, error) {
 
-	session, err := mgo.Dial(CONFIG.Db)
+	session, err := mgo.Dial(*MongoAddr)
 	if err != nil {
 		log.Println("Could not connect to mongo: ", err.Error())
 		return nil, err

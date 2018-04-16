@@ -1,0 +1,10 @@
+[
+  {
+    "_id":{"$oid":"5ab80799cd4dcd188ed1e766"},
+    "username": "test_gec",
+    "password": "1234",
+    "role": "gec",
+    "franchise_id": "1",
+    "name": "Gary Testies"
+  }
+]

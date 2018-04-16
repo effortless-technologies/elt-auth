@@ -25,9 +25,10 @@ before_install:
 
 install:
   - sudo docker build -t test/build .
+  - sudo docker-compose -f mongo-compose-seed.yml up --build -d
 
 script:
-  - go test ./... -tags prod -v 3
+  - go test -test.v ./... -args -mongoAddr=0.0.0.0:27017
 
 before_deploy:
   - gcloud --quiet components update kubectl

@@ -4,11 +4,20 @@ import (
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
+	"flag"
+)
+
+var mongoAddr = flag.String(
+	"mongoAddr",
+	"localhost:27017",
+	"database service address",
 )
 
 func TestUsers_GetUsers(t *testing.T) {
 
 	Convey("If users exist", t, func() {
+		MongoAddr = mongoAddr
+		So(MongoAddr, ShouldNotBeNil)
 
 		Convey("When retrieving users", func() {
 			users, err := GetUsers()
@@ -25,7 +34,10 @@ func TestUsers_GetUsers(t *testing.T) {
 func TestUsers_FindUser(t *testing.T) {
 
 	Convey("If finding a user with username", t, func() {
-		username := "gec"
+		MongoAddr = mongoAddr
+		So(MongoAddr, ShouldNotBeNil)
+
+		username := "test_gec"
 		So(username, ShouldNotBeNil)
 
 		Convey("When retrieving the user by uesrname", func() {
