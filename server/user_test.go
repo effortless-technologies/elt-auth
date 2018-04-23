@@ -80,7 +80,7 @@ func TestUsers_CreateUser(t *testing.T) {
 
 			Convey("Then a the already existing user and a status " +
 				"code of 302 should be returned", func() {
-					So(rec.Code, ShouldEqual, 302)
+					So(rec.Code, ShouldEqual, 409)
 
 					type userPayload struct {
 						Username 		string 			`json:"username"`

@@ -33,7 +33,7 @@ func CreateUser(c echo.Context) error {
 	up.Username = strings.ToLower(up.Username)
 	foundUser, err := models.FindUser(up.Username)
 	if err == nil {
-		return c.JSON(http.StatusFound, foundUser)
+		return c.JSON(http.StatusConflict, foundUser)
 	}
 
 	u := models.NewUser()
