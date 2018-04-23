@@ -12,7 +12,7 @@ import (
 
 	"github.com/labstack/echo"
 	. "github.com/smartystreets/goconvey/convey"
-	//"gopkg.in/mgo.v2/bson"
+	"gopkg.in/mgo.v2/bson"
 )
 
 var mongoAddr = flag.String(
@@ -27,6 +27,8 @@ var testUserPayload = `
 	"password": "1234"
 }
 `
+
+var testId *bson.ObjectId
 
 func TestUsers_CreateUser(t *testing.T) {
 	Convey("If adatabase exists", t, func() {
@@ -62,6 +64,12 @@ func TestUsers_CreateUser(t *testing.T) {
 				var up *userPayload
 				err = json.Unmarshal([]byte(payload), &up)
 				So(err, ShouldBeNil)
+
+				u, err := models.FindUser(up.Username)
+				So(err, ShouldBeNil)
+				So(u, ShouldNotBeNil)
+				testId = u.Id
+				So(testId, ShouldNotBeNil)
 			})
 		})
 	})
@@ -132,6 +140,36 @@ func TestUsers_GetUsers(t *testing.T) {
 				err = json.Unmarshal(payload, &properties)
 				So(err, ShouldBeNil)
 				So(len(properties), ShouldBeGreaterThan, 0)
+			})
+		})
+	})
+}
+
+func TestUsers_DeleteUser(t *testing.T) {
+	Convey("If a properties database exists", t, func() {
+		models.MongoAddr = mongoAddr
+		So(models.MongoAddr, ShouldNotBeNil)
+
+		e := echo.New()
+		req := httptest.NewRequest(echo.DELETE, "/", nil)
+		So(req, ShouldNotBeNil)
+
+		rec := httptest.NewRecorder()
+		So(rec, ShouldNotBeNil)
+
+		c := e.NewContext(req, rec)
+		c.SetPath("/users/:id")
+
+		c.SetParamNames("id")
+		c.SetParamValues(testId.Hex())
+
+		Convey("When calling the DELETE/properties handler", func() {
+			err := DeleteUser(c)
+			So(err, ShouldBeNil)
+
+			Convey("Then the returned status code should be " +
+				"204", func() {
+				So(rec.Code, ShouldEqual, 204)
 			})
 		})
 	})

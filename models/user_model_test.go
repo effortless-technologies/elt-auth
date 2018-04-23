@@ -1,10 +1,11 @@
 package models
 
 import (
+	"flag"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
-	"flag"
+	"gopkg.in/mgo.v2/bson"
 )
 
 var mongoAddr = flag.String(
@@ -12,6 +13,8 @@ var mongoAddr = flag.String(
 	"localhost:27017",
 	"database service address",
 )
+
+var testId *bson.ObjectId
 
 func TestUsers_CreateUsers(t *testing.T) {
 
@@ -24,22 +27,15 @@ func TestUsers_CreateUsers(t *testing.T) {
 			So(u, ShouldNotBeNil)
 			err := u.CreateUser()
 			So(err, ShouldBeNil)
-			id := u.Id.Hex()
+			id := u.Id
 			So(id, ShouldNotBeNil)
+			testId = id
+			So(testId, ShouldNotBeNil)
 
 			Convey("A list of users to be returned", func() {
-				users, err := GetUsers()
+				user, err := FindUserById(testId.Hex())
 				So(err, ShouldBeNil)
-				So(users, ShouldNotBeNil)
-
-				found := false
-				for index := range users {
-					if users[index].Id.Hex() == id {
-						found = true
-					}
- 				}
-
- 				So(found, ShouldEqual, true)
+				So(user, ShouldNotBeNil)
 			})
 		})
 	})
@@ -80,6 +76,44 @@ func TestUsers_FindUser(t *testing.T) {
 				"be retrieved", func() {
 				So(user, ShouldNotBeNil)
 				So(user.Username, ShouldEqual, username)
+			})
+		})
+	})
+}
+
+func TestUsers_FindUserById(t *testing.T) {
+
+	Convey("If finding a user with username", t, func() {
+		MongoAddr = mongoAddr
+		So(MongoAddr, ShouldNotBeNil)
+
+		Convey("When retrieving the user by id", func() {
+			user, err := FindUserById(testId.Hex())
+			So(err, ShouldBeNil)
+
+			Convey("The user with the specified id should " +
+				"be retrieved", func() {
+				So(user, ShouldNotBeNil)
+				So(user.Id.Hex(), ShouldEqual, testId.Hex())
+			})
+		})
+	})
+}
+
+func TestUsersModel_DeleteUser(t *testing.T) {
+
+	Convey("If a properties database exists", t, func() {
+		MongoAddr = mongoAddr
+		So(MongoAddr, ShouldNotBeNil)
+
+		Convey("When deleting an existing property", func() {
+			err := DeleteUser(testId.Hex())
+			So(err, ShouldBeNil)
+
+			Convey("A property should have been deleted", func() {
+				user, err := FindUserById(testId.Hex())
+				So(err, ShouldNotBeNil)
+				So(user, ShouldBeNil)
 			})
 		})
 	})
