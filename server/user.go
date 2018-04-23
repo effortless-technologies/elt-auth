@@ -11,6 +11,30 @@ import (
 	"github.com/labstack/echo"
 )
 
+func CreateUser(c echo.Context) error {
+
+	type userPayload struct {
+		Username 		string 			`json:"username"`
+		Password 		string			`json:"password"`
+	}
+
+	up := new(userPayload)
+	if err := c.Bind(up); err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+
+	up.Username = strings.ToLower(up.Username)
+
+	u := models.NewUser()
+	u.Username = up.Username
+	u.Password = up.Password
+	if err := u.CreateUser(); err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	return c.JSON(http.StatusCreated, u)
+}
+
 func GetUsers(c echo.Context) error {
 
 	u, err := models.GetUsers()

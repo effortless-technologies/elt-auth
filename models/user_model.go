@@ -10,11 +10,42 @@ import (
 var MongoAddr *string
 
 type User struct {
+	Id 				*bson.ObjectId	`json:"id" bson:"_id"`
 	Username 		string 			`json:"username"`
 	Password		string			`json:"password"`
 	Role 			string 			`json:"role"`
 	FranchiseId		int 			`json:"franchise_id"`
 	Name 			string			`json:"name"`
+}
+
+func NewUser() *User {
+
+	u := new(User)
+	id := bson.NewObjectId()
+	u.Id = &id
+
+	return u
+}
+
+func (u *User) CreateUser() error {
+
+	session, err := mgo.Dial(*MongoAddr)
+	if err != nil {
+		log.Println("Could not connect to mongo: ", err.Error())
+		return err
+	}
+	defer session.Close()
+
+	session.SetMode(mgo.Monotonic, true)
+
+	c := session.DB("elt").C("users")
+	_, err = c.UpsertId(u.Id, u)
+	if err != nil {
+		log.Println("Error creating User: ", err.Error())
+		return err
+	}
+
+	return nil
 }
 
 func GetUsers() ([]*User, error) {
