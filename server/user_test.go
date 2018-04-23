@@ -72,6 +72,33 @@ func TestUsers_CreateUser(t *testing.T) {
 				So(testId, ShouldNotBeNil)
 			})
 		})
+
+		Convey("When calling the POST/users handler with an existing " +
+			"user", func() {
+				err := CreateUser(c)
+				So(err, ShouldBeNil)
+
+			Convey("Then a the already existing user and a status " +
+				"code of 302 should be returned", func() {
+					So(rec.Code, ShouldEqual, 302)
+
+					type userPayload struct {
+						Username 		string 			`json:"username"`
+						Password 		string			`json:"password"`
+					}
+
+					payload, _ := ioutil.ReadAll(rec.Body)
+					var up *userPayload
+					err = json.Unmarshal([]byte(payload), &up)
+					So(err, ShouldBeNil)
+
+					u, err := models.FindUser(up.Username)
+					So(err, ShouldBeNil)
+					So(u, ShouldNotBeNil)
+					testId = u.Id
+					So(testId, ShouldNotBeNil)
+			})
+		})
 	})
 }
 
