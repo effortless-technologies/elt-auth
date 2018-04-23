@@ -23,15 +23,15 @@ var mongoAddr = flag.String(
 
 var testUserPayload = `
 {
-	"username": "test_gec",
-	"password": "1234"
+	"username": "tester_gec",
+	"password": "tester_1234"
 }
 `
 
 var testId *bson.ObjectId
 
 func TestUsers_CreateUser(t *testing.T) {
-	Convey("If adatabase exists", t, func() {
+	Convey("If a database exists", t, func() {
 		models.MongoAddr = mongoAddr
 		So(models.MongoAddr, ShouldNotBeNil)
 

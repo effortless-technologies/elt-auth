@@ -9,6 +9,8 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 func CreateUser(c echo.Context) error {
@@ -23,11 +25,16 @@ func CreateUser(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, err)
 	}
 
+	hp, err := hashPassword(up.Password)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+
 	up.Username = strings.ToLower(up.Username)
 
 	u := models.NewUser()
 	u.Username = up.Username
-	u.Password = up.Password
+	u.Password = hp
 	if err := u.CreateUser(); err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
@@ -75,7 +82,9 @@ func Login(c echo.Context) error {
 		return c.JSON(http.StatusNotFound, err)
 	}
 
-	if up.Password == u.Password {
+	match := checkPasswordHash(up.Password, u.Password)
+
+	if match == true {
 		token := jwt.New(jwt.SigningMethodHS256)
 
 		claims := token.Claims.(jwt.MapClaims)
@@ -95,4 +104,16 @@ func Login(c echo.Context) error {
 	}
 
 	return echo.ErrUnauthorized
+}
+
+func hashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+
+	return string(bytes), err
+}
+
+func checkPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+
+	return err == nil
 }
