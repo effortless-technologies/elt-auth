@@ -31,6 +31,10 @@ func CreateUser(c echo.Context) error {
 	}
 
 	up.Username = strings.ToLower(up.Username)
+	foundUser, err := models.FindUser(up.Username)
+	if err == nil {
+		return c.JSON(http.StatusFound, foundUser)
+	}
 
 	u := models.NewUser()
 	u.Username = up.Username
