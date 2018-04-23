@@ -13,6 +13,38 @@ var mongoAddr = flag.String(
 	"database service address",
 )
 
+func TestUsers_CreateUsers(t *testing.T) {
+
+	Convey("If users exist", t, func() {
+		MongoAddr = mongoAddr
+		So(MongoAddr, ShouldNotBeNil)
+
+		Convey("When retrieving users", func() {
+			u := NewUser()
+			So(u, ShouldNotBeNil)
+			err := u.CreateUser()
+			So(err, ShouldBeNil)
+			id := u.Id.Hex()
+			So(id, ShouldNotBeNil)
+
+			Convey("A list of users to be returned", func() {
+				users, err := GetUsers()
+				So(err, ShouldBeNil)
+				So(users, ShouldNotBeNil)
+
+				found := false
+				for index := range users {
+					if users[index].Id.Hex() == id {
+						found = true
+					}
+ 				}
+
+ 				So(found, ShouldEqual, true)
+			})
+		})
+	})
+}
+
 func TestUsers_GetUsers(t *testing.T) {
 
 	Convey("If users exist", t, func() {

@@ -29,7 +29,7 @@ func main() {
 	e.Use(middleware.Recover())
 
 	e.POST("/login", server.Login)
-
+	e.POST("/users", server.CreateUser)
 	e.GET("/users", server.GetUsers)
 
 	r := e.Group("/restricted")
