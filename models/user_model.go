@@ -48,6 +48,27 @@ func (u *User) CreateUser() error {
 	return nil
 }
 
+func DeleteUser(id string) error {
+
+	session, err := mgo.Dial(*MongoAddr)
+	if err != nil {
+		log.Println("Could not connect to mongo: ", err.Error())
+		return nil
+	}
+	defer session.Close()
+
+	session.SetMode(mgo.Monotonic, true)
+
+	c := session.DB("elt").C("users")
+	err = c.RemoveId(bson.ObjectIdHex(id))
+	if err != nil {
+		log.Println("Error deleteing Property: ", err.Error())
+		return err
+	}
+
+	return nil
+}
+
 func GetUsers() ([]*User, error) {
 
 	session, err := mgo.Dial(*MongoAddr)
@@ -88,4 +109,23 @@ func FindUser(username string) (*User, error) {
 	}
 
 	return &user, nil
+}
+
+func FindUserById(id string) (*User, error) {
+
+	session, err := mgo.Dial(*MongoAddr)
+	if err != nil {
+		log.Println("Could not connect to mongo: ", err.Error())
+		return nil, err
+	}
+
+	var user *User
+	c := session.DB("elt").C("users")
+	defer session.Close()
+	err = c.FindId(bson.ObjectIdHex(id)).One(&user)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }

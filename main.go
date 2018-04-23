@@ -30,6 +30,7 @@ func main() {
 
 	e.POST("/login", server.Login)
 	e.POST("/users", server.CreateUser)
+	e.DELETE("/users/:id", server.DeleteUser)
 	e.GET("/users", server.GetUsers)
 
 	r := e.Group("/restricted")

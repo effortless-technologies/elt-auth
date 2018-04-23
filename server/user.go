@@ -35,6 +35,17 @@ func CreateUser(c echo.Context) error {
 	return c.JSON(http.StatusCreated, u)
 }
 
+func DeleteUser(c echo.Context) error {
+
+	id := c.Param("id")
+
+	if err := models.DeleteUser(id); err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+	}
+
+	return c.NoContent(http.StatusNoContent)
+}
+
 func GetUsers(c echo.Context) error {
 
 	u, err := models.GetUsers()
